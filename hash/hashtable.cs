@@ -59,5 +59,5 @@ namespace HashingLab
 
 interface IKeyed
 {
-    int getKey();
+    public int getKey();
 }

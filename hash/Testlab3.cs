@@ -68,32 +68,6 @@ using System;
 
 namespace HashingLab
 {
-    //(a) creates a class called Person which implements the IKeyed interface.
-    //  A Person should have a name and SSN (which are strings), and an age;
-    //  the "getKey" method of Person should return the numeric value of the SSN;
-    class Person : IKeyed
-    {
-        private string name;
-        private string SSN;
-        private int age;
-        
-        public Person(string inputSSN)
-        {
-            Person("", inputSSN, 0);
-        }
-        
-        public Person(string inputName, string inputSSN, int inputAge)
-        {
-            name = inputName;
-            SSN = inputSSN;
-            age = inputAge;
-        }
-        
-        public int getKey()
-        {
-            return Int32.Parse(SSN);
-        }
-    }
 
     class Testlab3
     {
@@ -102,6 +76,22 @@ namespace HashingLab
 
         public static void Main(string[] args)
         {
+            Person p = new Person("Pat Smith", "123123123", 18);
+            // int k = p.getKey();
+
+            /*
+            IKeyed kp = p;
+            int k = kp.getKey();
+
+             */
+
+
+
+
+
+
+
+
             //(b)creates a HashTable t with the capacity to store 11 values of type Person using linear probing;
             int capacity = 11;
             HashTable<Person> t = new HashTable<Person>(capacity, LinearProbing);
@@ -116,9 +106,12 @@ namespace HashingLab
             try
             {
                 t.addItem(p);
-            } catch (IndexOutOfRangeException e)
+            // } catch (IndexOutOfRangeException e)
+            }
+            catch(Exception e)
             {
-                Console.WriteLine("Adding Person object p is failed because of full capacity.");
+                // Console.WriteLine("Adding Person object p is failed because of full capacity.");
+                Console.WriteLine("Oops! we got the following exeptions:" + e);
             }
             
             //(e)creates a new Person object x with SSN "000000001" but no name or age, and calls retrieveItem to get this Person.
@@ -132,6 +125,11 @@ namespace HashingLab
             {
                 Console.WriteLine("Fail to retrieve x");
             }
+
+            // 3.
+            // p.getKey() will
+
+
 
 
             //5. Write C# code that
