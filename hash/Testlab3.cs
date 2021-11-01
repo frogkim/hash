@@ -76,6 +76,12 @@ namespace HashingLab
         private string name;
         private string SSN;
         private int age;
+        
+        public Person(string inputSSN)
+        {
+            Person("", inputSSN, 0);
+        }
+        
         public Person(string inputName, string inputSSN, int inputAge)
         {
             name = inputName;
@@ -83,12 +89,11 @@ namespace HashingLab
             age = inputAge;
         }
         
-        public int IKeyed.getKey()
+        public int getKey()
         {
             return Int32.Parse(SSN);
         }
     }
-
 
     class Testlab3
     {
@@ -117,7 +122,8 @@ namespace HashingLab
             }
             
             //(e)creates a new Person object x with SSN "000000001" but no name or age, and calls retrieveItem to get this Person.
-            Person x = new Person("", "000000001", 0);
+            // Person x = new Person("", "000000001", 0);
+            Person x = new Person("000000001");
             if (t.retrieveItem(ref x))
             {
                 Console.WriteLine("Success to retrieve x");
