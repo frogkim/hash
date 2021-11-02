@@ -85,13 +85,6 @@ namespace HashingLab
 
              */
 
-
-
-
-
-
-
-
             //(b)creates a HashTable t with the capacity to store 11 values of type Person using linear probing;
             int capacity = 11;
             HashTable<Person> t = new HashTable<Person>(capacity, LinearProbing);
