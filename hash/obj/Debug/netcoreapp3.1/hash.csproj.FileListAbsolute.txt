@@ -24,3 +24,4 @@ C:\Users\jchoi11\Source\Repos\hash\hash\bin\Debug\netcoreapp3.1\hash.runtimeconf
 C:\Users\jchoi11\Source\Repos\hash\hash\bin\Debug\netcoreapp3.1\hash.dll
 C:\Users\jchoi11\Source\Repos\hash\hash\bin\Debug\netcoreapp3.1\hash.pdb
 C:\Users\jchoi11\Source\Repos\hash\hash\obj\Debug\netcoreapp3.1\hash.genruntimeconfig.cache
+C:\Users\jchoi11\Source\Repos\hash\hash\obj\Debug\netcoreapp3.1\hash.csproj.AssemblyReference.cache
