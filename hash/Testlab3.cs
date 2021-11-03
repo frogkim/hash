@@ -76,7 +76,6 @@ namespace HashingLab
 
         public static void Main(string[] args)
         {
-            Person p = new Person("Pat Smith", "123123123", 18);
             // int k = p.getKey();
 
             /*

@@ -8,6 +8,7 @@
 
 //Test your HashTable class against Test Plan #3. Does your code pass the tests?
 //Make sure that your name appears in a comment at the top of each source file. Submit all source files, including the test code, after first compressing them into a single file using the Windows file compression utility (NOT a commercial utility); the file extension should be .zip.
+using System;
 
 namespace HashingLab
 {
@@ -21,6 +22,8 @@ namespace HashingLab
 
         public HashTable(int theSize, bool useLinearProbing = false)//optional parameter useLinearProbing defaults to false
         {
+            if(theSize < 0) throw (new Exception("The size of hastable must be positive."));
+
             // constructor's job is to initialize the instance variables
             // bracket!
             linearProbing = useLinearProbing;
@@ -35,16 +38,32 @@ namespace HashingLab
 
         private void getNextGoodSizeForQuadraticProbing(ref int theSize)
         {
-            while(!satisfiedTheoremQ(theSize))
+            while(!satisfiesTheoremQ(theSize))
             {
                 theSize++;
             }
         }
         private bool satisfiesTheoremQ(int theSize)
         {
-            return false; // FIX ME!
+            if( theSize == 1 || theSize == 2) return true;
+            else if(isPrime(theSize) && theSize % 4 == 3) return true;
+            else if(theSize % 2 == 0)
+            {
+                int half = theSize / 2;
+                if(isPrime(half) && half % 4 == 3) return true;
+            }
+            return false;
         }
-
+        private bool isPrime(int theSize)
+        {
+            int divider = 2;
+            while(divider < theSize)
+            {
+                if(theSize % divider == 0) return false;
+                divider++;
+            }
+            return true;
+        }
 
         public void addItem(T theItem)
         {
@@ -54,53 +73,100 @@ namespace HashingLab
             // home position of Item is
             int k = theItem.getKey();
             int e = hashFunction(k);
-            for(int i=0; i<theSize; i++)
+
+            if(linearProbing)
             {
-                if (!occupied[index])
+                for(int i=0; i < items.Length; i++)
                 {
-                    items[index] = theItem;
-                    occupied[index] = true;
-                }
-                else
+                    int index = e + i;
+                    index = index % items.Length;
+                    if (!occupied[index])
+                    {
+                        items[index] = theItem;
+                        occupied[index] = true;
+                        return;
+                    }
+                } 
+            }
+            else
+            {
+                for(int i=0; i< items.Length; i++)
                 {
-                    if(linearProbing)
+                    int sign = (int) Math.Pow(-1, i+1);
+                    int index = (i + 1) / 2;
+                    index = index * index * sign;
+                    index = e + index;
+                    index = index % items.Length;
+                    // index = ( (i+1)/2 )^2 * (-1)^(i+1)
+                    if (!occupied[index])
                     {
-
+                        items[index] = theItem;
+                        occupied[index] = true;
                     }
-                    else
-                    {
-
-                    }
-                }
-            } 
+                    return;
+                } 
+            }
+            throw (new Exception("The capacity of hashtable is full."));
         }
 
         public bool retrieveItem(ref T theItem)//theItem comes with its key fields filled, returns with all fields filled if found
         {
+            int k = theItem.getKey();
+            int e = hashFunction(k);
             return false;
         }
 
         private int hashFunction(int keyValue)
         {
-            // we need to splite keyValue into tow "havles", longer half is right.
-            int digit = 0;
-            int tmp = keyValue;
-            while( tmp > 0 )
-            {
-                tmp = tmp / 10;
-                digit++;
-            }
-
+            /* In lecture on Nov. 2
+            // we need to splite keyValue into two "havles", longer half is right.
             string keyString = keyValue.ToString();
             int len = keyString.Length;
             string digits7through9 = keyString.Substring(7, 2);
             // now it's time to write the real code...!
+             */
+            int theNumber = keyValue, firstHalf = 0, secondHalf = 0;
+            // Step 1 - 5: iterate 3 times
+            for(int i = 0; i < 3; i++)
+            {
+                // Step 1
+                splitNumber(theNumber, firstHalf, secondHalf);
+                // Step 2
+                if( firstHalf == 0 ) firstHalf = 17;
+                if( secondHalf == 0 ) secondHalf = 17;
+                // Step 3
+                int theNumber = firstHalf * secondHalf;
+                // Step 4
+                theNumber += 9;
+                // Step 5
+                theNumber = tmp % items.Length;
+            }
+            return theNumber;
+            // return 0; // replace this! Implement the hash function from Test Plan 3
+        }
+        private void splitNumber(int theNumber, ref int firstHalf, ref int secondHalf)
+        {
+            int digit = getDigit(theNumber);
+            int firstDigit = digit / 2;
+            int secondDigit = firstDigit;
+            if( (digit / 2) > firstDigit)
+            {
+                secondDigit++;
+            }
+            int zeros = (int) Math.Pow(10, secondDigit);
+            firstHalf = theNumber / zeros;
+            secondHalf = theNumber - firstHalf * zeros;
+        }
 
-
-
-
-
-            return 0; // replace this! Implement the hash function from Test Plan 3
+        private int getDigit(int theNumber)
+        {
+            int digit = 0;
+            while( theNumber > 0 )
+            {
+                theNumber = theNumber / 10;
+                digit++;
+            }
+            return digit;
         }
     }
 }
