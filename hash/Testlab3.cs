@@ -69,6 +69,14 @@ using System;
 namespace HashingLab
 {
 
+    struct myInt : IKeyed
+    {
+        public int getKey()
+        {
+            return 1;
+        }
+    }
+
     class Testlab3
     {
         static readonly bool LinearProbing = true;
@@ -76,6 +84,28 @@ namespace HashingLab
 
         public static void Main(string[] args)
         {
+            //In lecture. For explain -------------------------------
+            // Why should we avoid negative denominatee ?
+            int m = 11;
+            int d = 1 - 2 * 2;
+            int finalIndex = d % m;
+            
+            // Test for
+            // "if(theItem[d] == null)"
+            HashTable<int> intHash = new HashTable<int>(11);
+            myInt mi = new myInt();
+            if(mi == null)
+            {
+                throw new Exception("Oops!");
+            }
+
+            intHash.addItem(mi);
+            // ------------------------------ In lecture. For explain
+            
+            
+            
+            
+            
             // int k = p.getKey();
 
             /*

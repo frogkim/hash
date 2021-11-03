@@ -73,7 +73,26 @@ namespace HashingLab
             // home position of Item is
             int k = theItem.getKey();
             int e = hashFunction(k);
+            int m = items.Length;
+            for (int i = 0; i < m; i++)
+            {
+                // compute the probe index d = p(e,i)
+                int d = linearProbe(e,i);
+                // if the array cell at index d is empty, then store theItem
+                // at index d return;
 
+                // if (theItem[d] == null) { }
+                // Don't do that.
+                // We set theItem's data type is general.
+                // If user input a certain data type, that has no null like struct, it doens't work.
+                
+                if(!occupied[d])
+                {
+                    // don't forget
+                }
+            }
+
+            /*
             if(linearProbing)
             {
                 for(int i=0; i < items.Length; i++)
@@ -107,10 +126,45 @@ namespace HashingLab
                 } 
             }
             throw (new Exception("The capacity of hashtable is full."));
+             */
         }
+
+        private int probe(bool linear, int homePosition, int probeIndex)
+        {
+            int index = -1;
+            if(linear)
+            {
+                index = e + i;
+            }
+            else
+            {
+                int sign = (int) Math.Pow(-1, i+1);
+                index = (i + 1) / 2;
+                index = index * index * sign;
+                index = e + index;
+                index = index % items.Length;    
+            }
+            return index ; // FIX ME!
+        }
+
+        private int linearProbe(int homePosition, int probeIndex)
+        {
+            return 0 ; // FIX ME!
+
+        }
+
+        private int quadraticProbe(int homePosition, int probeIndex)
+        {
+            return 0 ; // FIX ME!
+        }
+
 
         public bool retrieveItem(ref T theItem)//theItem comes with its key fields filled, returns with all fields filled if found
         {
+            // if we find theItem in items at index d, then
+            // then we should fill in all fields of theItem using items[d]'s values.
+            // like this: theItem = items[d];
+
             int k = theItem.getKey();
             int e = hashFunction(k);
             return false;
