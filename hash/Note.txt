@@ -1,0 +1,483 @@
+// Jong-Young Choi
+//------- hashtable.cs
+
+//Make sure that each of your class methods is functional!
+//You may add private members to HashTable, but do NOT change the public interface.
+//
+//Use the same algorithm for hashFunction that you submitted in Test Plan #3.
+//Use the second constructor argument to determine the type of probing used: Implement quadratic probing if the value of "useLinearProbing" is false.
+
+//Test your HashTable class against Test Plan #3. Does your code pass the tests?
+//Make sure that your name appears in a comment at the top of each source file. Submit all source files, including the test code, after first compressing them into a single file using the Windows file compression utility (NOT a commercial utility); the file extension should be .zip.
+using System;
+
+namespace HashingLab
+{
+    class HashTable<T> // specifies a "generic" class with type parameter T. it is moer supposed general
+    where T : IKeyed   // forces T to implement the Ikeyed interface
+    {
+        // Do not add data member - it's the same with global variable in C
+        private T[] items;
+        private bool linearProbing;
+        private bool[] occupied;
+
+        public HashTable(int theSize, bool useLinearProbing = false)//optional parameter useLinearProbing defaults to false
+        {
+            if(theSize < 0) throw (new Exception("The size of hastable must be positive."));
+
+            // constructor's job is to initialize the instance variables
+            // bracket!
+            linearProbing = useLinearProbing;
+            // if quadratic probing is used, we must satisfy Theorem Q.
+            if(!linearProbing)
+            {
+                getNextGoodSizeForQuadraticProbing(ref theSize);
+            }
+            items = new T[theSize]; // default value, we don't know yet
+            occupied = new bool[theSize]; // bool defaults to false, good!
+        }
+
+        private void getNextGoodSizeForQuadraticProbing(ref int theSize)
+        {
+            while(!satisfiesTheoremQ(theSize))
+            {
+                theSize++;
+            }
+        }
+        private bool satisfiesTheoremQ(int theSize)
+        {
+            if( theSize == 1 || theSize == 2) return true;
+            else if(isPrime(theSize) && theSize % 4 == 3) return true;
+            else if(theSize % 2 == 0)
+            {
+                int half = theSize / 2;
+                if(isPrime(half) && half % 4 == 3) return true;
+            }
+            return false;
+        }
+        private bool isPrime(int theSize)
+        {
+            int divider = 2;
+            while(divider < theSize)
+            {
+                if(theSize % divider == 0) return false;
+                divider++;
+            }
+            return true;
+        }
+
+        public void addItem(T theItem)
+        {
+            // Remember, type T can be ANY type (that implements IKeyed)!
+            // Keep your code general!
+            // compute the home position e of theItem
+            // home position of Item is
+            int k = theItem.getKey();
+            int e = hashFunction(k);
+            int m = items.Length;
+            for (int i = 0; i < m; i++)
+            {
+                // compute the probe index d = p(e,i)
+                int d = linearProbe(e,i);
+                // if the array cell at index d is empty, then store theItem
+                // at index d return;
+
+                // if (theItem[d] == null) { }
+                // Don't do that.
+                // We set theItem's data type is general.
+                // If user input a certain data type, that has no null like struct, it doens't work.
+                
+                if(!occupied[d])
+                {
+                    // don't forget
+                }
+            }
+
+            /*
+            if(linearProbing)
+            {
+                for(int i=0; i < items.Length; i++)
+                {
+                    int index = e + i;
+                    index = index % items.Length;
+                    if (!occupied[index])
+                    {
+                        items[index] = theItem;
+                        occupied[index] = true;
+                        return;
+                    }
+                } 
+            }
+            else
+            {
+                for(int i=0; i< items.Length; i++)
+                {
+                    int sign = (int) Math.Pow(-1, i+1);
+                    int index = (i + 1) / 2;
+                    index = index * index * sign;
+                    index = e + index;
+                    index = index % items.Length;
+                    // index = ( (i+1)/2 )^2 * (-1)^(i+1)
+                    if (!occupied[index])
+                    {
+                        items[index] = theItem;
+                        occupied[index] = true;
+                    }
+                    return;
+                } 
+            }
+            throw (new Exception("The capacity of hashtable is full."));
+             */
+        }
+
+        //private int probe(bool linear, int homePosition, int probeIndex)
+        //{
+        //    int index = -1;
+        //    if(linear)
+        //    {
+        //        index = e + probeIndex;
+        //    }
+        //    else
+        //    {
+        //        // (i + 1)/2 * (i + 1)/2 * (-1)^(i+1)  
+        //        int sign = (int) Math.Pow(-1, probeIndex + 1);
+        //        index = (probeIndex + 1) / 2;
+        //        index = index * index * sign;
+        //        index = homePosition + index;
+        //    }
+        //    index = index % items.Length;    
+        //    return index ; // FIX ME!
+        //}
+
+        private int linearProbe(int homePosition, int probeIndex)
+        {
+            return (homePosition + probeIndex) % items.Length;
+
+        }
+
+        private int quadraticProbe(int homePosition, int probeIndex)
+        {
+            int sign = (int)Math.Pow(-1, probeIndex + 1);
+            int index = (probeIndex + 1) / 2;
+            index = index * index * sign;
+            index = homePosition + index;
+            index = index % items.Length;
+            return index;
+        }
+
+
+        public bool retrieveItem(ref T theItem)//theItem comes with its key fields filled, returns with all fields filled if found
+        {
+            // if we find theItem in items at index d, then
+            // then we should fill in all fields of theItem using items[d]'s values.
+            // like this: theItem = items[d];
+
+            int k = theItem.getKey();
+            int e = hashFunction(k);
+            return false;
+        }
+
+        private int hashFunction(int keyValue)
+        {
+            /* In lecture on Nov. 2
+            // we need to splite keyValue into two "havles", longer half is right.
+            string keyString = keyValue.ToString();
+            int len = keyString.Length;
+            string digits7through9 = keyString.Substring(7, 2);
+            // now it's time to write the real code...!
+             */
+            if (keyValue < 0) throw new Exception("Key value must be at least greater than zero");
+            // getKey method is implemented by user, not hashtable creater.
+            // It is needed to be confirmed by hashtabel creator.
+
+            int theNumber = keyValue, firstHalf = 0, secondHalf = 0;
+            // Step 1 - 5: iterate 3 times
+            for(int i = 0; i < 3; i++)
+            {
+                // Step 1
+                splitNumber(theNumber, ref firstHalf, ref secondHalf);
+                // Step 2
+                if( firstHalf == 0 ) firstHalf = 17;
+                if( secondHalf == 0 ) secondHalf = 17;
+                // Step 3
+                theNumber = firstHalf * secondHalf;
+                // Step 4
+                theNumber += 9;
+                // Step 5
+                theNumber = theNumber % items.Length;
+            }
+            return theNumber;
+            // return 0; // replace this! Implement the hash function from Test Plan 3
+        }
+        private void splitNumber(int theNumber, ref int firstHalf, ref int secondHalf)
+        {
+            int digit = getDigit(theNumber);
+            int firstDigit = digit / 2;
+            int secondDigit = firstDigit;
+            if( (digit / 2) > firstDigit)
+            {
+                secondDigit++;
+            }
+            int zeros = (int) Math.Pow(10, secondDigit);
+            firstHalf = theNumber / zeros;
+            secondHalf = theNumber - firstHalf * zeros;
+        }
+
+        private int getDigit(int theNumber)
+        {
+            int digit = 0;
+            while( theNumber > 0 )
+            {
+                theNumber /= 10;
+                digit++;
+            }
+            return digit;
+        }
+    }
+}
+
+interface IKeyed
+{
+    public int getKey();
+}
+
+
+// ----------------- Person.cs
+
+using System;
+
+namespace HashingLab
+{
+    //(a) creates a class called Person which implements the IKeyed interface.
+    //  A Person should have a name and SSN (which are strings), and an age;
+    //  the "getKey" method of Person should return the numeric value of the SSN;
+    class Person : IKeyed
+    {
+        private string name;
+        private string SSN;
+        private int age;
+
+
+        public Person(string theName, string theSSN, int theAge)
+        {
+            name = theName;
+            SSN = theSSN;
+            age = theAge;
+        }
+
+        public Person(string theSSN)
+        {
+            SSN = theSSN;
+        }
+        /*
+         * 
+         *         public Person(string inputSSN)
+                {
+                    Init("", inputSSN, 0);
+                }
+
+                public Person(string inputName, string inputSSN, int inputAge)
+                {
+                    Init(inputName,inputSSN,inputAge);
+                }
+
+                private void Init(string inputName, string inputSSN, int inputAge)
+                {
+                    name = inputName;
+                    SSN = inputSSN;
+                    age = inputAge;
+                }
+
+         */
+
+        public int getKey()
+        {
+            // return Int32.Parse(SSN);
+            return int.Parse(SSN);
+        }
+
+
+        /*
+                int IKeyed.getKey() // useful if Person has multiple "getKey" methods,
+                    //e.g. if Person implements more than one interface with getKey.
+                {
+                    return int.Parse(SSN);
+                } // this way, p.getKey() is ILLEGAL if p is declared as a Person!
+         */
+
+
+    }
+}
+
+
+//---------- Testlab3.cs
+// Jong-Young Choi
+
+//This assignment concerns a HashTable generic class written to fulfill the requirements for Lab #3.
+//In particular, the hash function is given in Question #1 below. In each of the tests below, work out the expected results manually and show your work.
+
+//1. Let h be a hash function defined by iterating the following five steps 3 times:
+//(i)split the input equally into two halves using folding
+//      (in case the number of digits is odd, group the greater number of digits into the second half);
+//(ii) if either half is 0, then replace it with 17;
+//(iii) multiply the two halves together;
+//(iv) add the number 9;
+//(v) mod out by the table size.
+
+//For example: to compute h(56000) with m = 10, we proceed as follows:
+//(i)split into 56 and 000;
+//(ii)replace 000 with 17;
+//(iii)multiply 56 by 17 to get 952;
+//(iv)add 9 to get 961;
+//(v)mod out by 10 to get 1.
+
+//Loop back to get
+//(i) 0 and 1;
+//(ii)17 and 1;
+//(iii)17;
+//(iv)26;
+//(v)6.
+//
+//Loop back once more to get
+//(i) 0 and 6;
+//(ii)17 and 6;
+//(iii)102;
+//(iv)111;
+//(v)1.So h(56000) = 1.
+
+//(a)Compute BY HAND the value h(1), with m = 11.
+//(b) Compute BY HAND the value h(34), with m = 15.
+
+
+//2. Write C# code that
+
+//(a) creates a class called Person which implements the IKeyed interface.
+//  A Person should have a name and SSN (which are strings), and an age;
+//  the "getKey" method of Person should return the numeric value of the SSN;
+//(b)creates a HashTable t with the capacity to store 11 values of type Person using linear probing;
+//(c)stores a Person object p with name John Doe, age 20, SSN "000000001", repeatedly, a total of 11 times;
+//(d)attempts to store the Person John Doe again;
+//(e)creates a new Person object x with SSN "000000001" but no name or age, and calls retrieveItem to get this Person.
+
+//3. (a) Manually compute the state of the hash table after each call to addItem for the code you wrote in exercise #2 above.
+//          Make a list of all the indexes in the order in which the items will be stored.
+//(b) What should happen when the code from exercise 2(d) is run ?
+//(c) What should x look like after the code from exercise 2(e) is run ?
+
+//4. (a) Is 11 a good value for the size of a hash table using quadratic probing? Why or why not?
+//(b) If your answer to part (a) above was No, then what should the HashTable set the actual size to be when the user tells it to use size 11?
+//(c),(d)Repeat exercises 4(a),(b)with 11 replaced by 15.
+
+//5. Write C# code that
+
+//(a) creates a HashTable t with the capacity to store 11 Person objects using quadratic probing
+//  (note that the actual size stored internally may differ: see exercise 4(b) above);
+//(b)stores the Person p from Question #2(c) above, repeatedly, until the hash table is full.
+
+//6. Manually compute the state of the hash table after each call to addItem for the code you wrote in Exercise 5 above.
+//  Make a list of all the indexes in the order in which the items will be stored.
+
+using System;
+
+namespace HashingLab
+{
+
+    struct myInt : IKeyed
+    {
+        public int getKey()
+        {
+            return 1;
+        }
+    }
+
+    class Testlab3
+    {
+        static readonly bool LinearProbing = true;
+        static readonly bool QuadraticProbing = false;
+
+        public static void Main(string[] args)
+        {
+            //In lecture. For explain -------------------------------
+            // Why should we avoid negative denominatee ?
+            int m = 11;
+            int d = 1 - 2 * 2;
+            int finalIndex = d % m;
+            
+            // Test for
+            // "if(theItem[d] == null)"
+            HashTable<int> intHash = new HashTable<int>(11);
+            myInt mi = new myInt();
+            if(mi == null)
+            {
+                throw new Exception("Oops!");
+            }
+
+            intHash.addItem(mi);
+            // ------------------------------ In lecture. For explain
+            
+            
+            
+            
+            
+            // int k = p.getKey();
+
+            /*
+            IKeyed kp = p;
+            int k = kp.getKey();
+
+             */
+
+            //(b)creates a HashTable t with the capacity to store 11 values of type Person using linear probing;
+            int capacity = 11;
+            HashTable<Person> t = new HashTable<Person>(capacity, LinearProbing);
+
+            //(c)stores a Person object p with name John Doe, age 20, SSN "000000001", repeatedly, a total of 11 times;
+            Person p = new Person("John Doe", "000000001", 20);
+            for(int i=0; i<11; i++)
+            {
+                t.addItem(p);
+            }
+            //(d)attempts to store the Person John Doe again;
+            try
+            {
+                t.addItem(p);
+            // } catch (IndexOutOfRangeException e)
+            }
+            catch(Exception e)
+            {
+                // Console.WriteLine("Adding Person object p is failed because of full capacity.");
+                Console.WriteLine("Oops! we got the following exeptions:" + e);
+            }
+            
+            //(e)creates a new Person object x with SSN "000000001" but no name or age, and calls retrieveItem to get this Person.
+            // Person x = new Person("", "000000001", 0);
+            Person x = new Person("000000001");
+            if (t.retrieveItem(ref x))
+            {
+                Console.WriteLine("Success to retrieve x");
+            }
+            else
+            {
+                Console.WriteLine("Fail to retrieve x");
+            }
+
+            // 3.
+            // p.getKey() will
+
+
+
+
+            //5. Write C# code that
+
+            //(a) creates a HashTable t with the capacity to store 11 Person objects using quadratic probing
+            //  (note that the actual size stored internally may differ: see exercise 4(b) above);
+            t = new HashTable<Person>(capacity, QuadraticProbing);
+            //(b)stores the Person p from Question #2(c) above, repeatedly, until the hash table is full.
+            for (int i = 0; i < capacity; i++)
+            {
+                t.addItem(p);
+            }
+
+        }
+    }
+}

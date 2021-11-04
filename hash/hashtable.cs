@@ -67,95 +67,68 @@ namespace HashingLab
 
         public void addItem(T theItem)
         {
-            // Remember, type T can be ANY type (that implements IKeyed)!
-            // Keep your code general!
-            // compute the home position e of theItem
-            // home position of Item is
-            int k = theItem.getKey();
-            int e = hashFunction(k);
-            int m = items.Length;
-            for (int i = 0; i < m; i++)
+            int keyValue = theItem.getKey();
+            int homePosition = hashFunction(keyValue);
+            // int m = items.Length; it is not C# style.
+            for (int i = 0; i < items.Length; i++)
             {
                 // compute the probe index d = p(e,i)
-                int d = linearProbe(e,i);
-                // if the array cell at index d is empty, then store theItem
-                // at index d return;
-
-                // if (theItem[d] == null) { }
-                // Don't do that.
-                // We set theItem's data type is general.
-                // If user input a certain data type, that has no null like struct, it doens't work.
-                
-                if(!occupied[d])
+                // int index = probe(linearProbing, homePosition, i);
+                int index;
+                if (linearProbing)
                 {
-                    // don't forget
+                    index = linearProbe(homePosition, i);
+                }
+                else
+                {
+                    index = quadraticProbe(homePosition, i);
+                }
+                
+                if (!occupied[index])
+                {
+                    items[index] = theItem;
+                    occupied[index] = true;
+                    return;
                 }
             }
-
-            /*
-            if(linearProbing)
-            {
-                for(int i=0; i < items.Length; i++)
-                {
-                    int index = e + i;
-                    index = index % items.Length;
-                    if (!occupied[index])
-                    {
-                        items[index] = theItem;
-                        occupied[index] = true;
-                        return;
-                    }
-                } 
-            }
-            else
-            {
-                for(int i=0; i< items.Length; i++)
-                {
-                    int sign = (int) Math.Pow(-1, i+1);
-                    int index = (i + 1) / 2;
-                    index = index * index * sign;
-                    index = e + index;
-                    index = index % items.Length;
-                    // index = ( (i+1)/2 )^2 * (-1)^(i+1)
-                    if (!occupied[index])
-                    {
-                        items[index] = theItem;
-                        occupied[index] = true;
-                    }
-                    return;
-                } 
-            }
-            throw (new Exception("The capacity of hashtable is full."));
-             */
+            throw new Exception("Not enough capacity");
         }
 
-        private int probe(bool linear, int homePosition, int probeIndex)
-        {
-            int index = -1;
-            if(linear)
-            {
-                index = e + i;
-            }
-            else
-            {
-                int sign = (int) Math.Pow(-1, i+1);
-                index = (i + 1) / 2;
-                index = index * index * sign;
-                index = e + index;
-                index = index % items.Length;    
-            }
-            return index ; // FIX ME!
-        }
+        //private int probe(bool linear, int homePosition, int probeIndex)
+        //{
+        //    int index = -1;
+        //    if(linear)
+        //    {
+        //        index = e + probeIndex;
+        //    }
+        //    else
+        //    {
+        // TODO: Check here again
+        //        // (i + 1)/2 * (i + 1)/2 * (-1)^(i+1)  
+        //        int sign = (int) Math.Pow(-1, probeIndex + 1);
+        //        index = (probeIndex + 1) / 2;
+        //        index = index * index * sign;
+        //        index = homePosition + index;
+        //    }
+        //    index = index % items.Length;    
+        //    return index;
+        //}
 
         private int linearProbe(int homePosition, int probeIndex)
         {
-            return 0 ; // FIX ME!
+            return (homePosition + probeIndex) % items.Length;
 
         }
 
         private int quadraticProbe(int homePosition, int probeIndex)
         {
-            return 0 ; // FIX ME!
+            // TODO: Check here again
+            int sign = (int)Math.Pow(-1, probeIndex + 1);
+            int index = (probeIndex + 1) / 2;
+            index = index * index * sign;
+            index = homePosition + index;
+            index = index % items.Length;
+            return index;
         }
 
 
@@ -172,31 +145,28 @@ namespace HashingLab
 
         private int hashFunction(int keyValue)
         {
-            /* In lecture on Nov. 2
-            // we need to splite keyValue into two "havles", longer half is right.
-            string keyString = keyValue.ToString();
-            int len = keyString.Length;
-            string digits7through9 = keyString.Substring(7, 2);
-            // now it's time to write the real code...!
-             */
+            if (keyValue < 0) throw new Exception("Key value must be at least greater than zero");
+            // getKey method is implemented by user, not hashtable creater.
+            // It is needed to be confirmed by hashtabel creator.
+
             int theNumber = keyValue, firstHalf = 0, secondHalf = 0;
             // Step 1 - 5: iterate 3 times
             for(int i = 0; i < 3; i++)
             {
                 // Step 1
-                splitNumber(theNumber, firstHalf, secondHalf);
+                splitNumber(theNumber, ref firstHalf, ref secondHalf);
                 // Step 2
                 if( firstHalf == 0 ) firstHalf = 17;
                 if( secondHalf == 0 ) secondHalf = 17;
                 // Step 3
-                int theNumber = firstHalf * secondHalf;
+                theNumber = firstHalf * secondHalf;
                 // Step 4
                 theNumber += 9;
                 // Step 5
-                theNumber = tmp % items.Length;
+                // TODO: Check here again
+                theNumber = theNumber % items.Length;
             }
             return theNumber;
-            // return 0; // replace this! Implement the hash function from Test Plan 3
         }
         private void splitNumber(int theNumber, ref int firstHalf, ref int secondHalf)
         {
@@ -217,7 +187,7 @@ namespace HashingLab
             int digit = 0;
             while( theNumber > 0 )
             {
-                theNumber = theNumber / 10;
+                theNumber /= 10;
                 digit++;
             }
             return digit;
