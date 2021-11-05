@@ -1,34 +1,22 @@
 // Jong-Young Choi
-
-//Make sure that each of your class methods is functional!
-//You may add private members to HashTable, but do NOT change the public interface.
-//
-//Use the same algorithm for hashFunction that you submitted in Test Plan #3.
-//Use the second constructor argument to determine the type of probing used: Implement quadratic probing if the value of "useLinearProbing" is false.
-
-//Test your HashTable class against Test Plan #3. Does your code pass the tests?
-//Make sure that your name appears in a comment at the top of each source file. Submit all source files, including the test code, after first compressing them into a single file using the Windows file compression utility (NOT a commercial utility); the file extension should be .zip.
 using System;
 
 namespace HashingLab
 {
-    class HashTable<T> // specifies a "generic" class with type parameter T. it is moer supposed general
-    where T : IKeyed   // forces T to implement the Ikeyed interface
+    class HashTable<T> 
+    where T : IKeyed   
     {
         // Do not add data member - it's the same with global variable in C
         private T[] items;
         private bool linearProbing;
         private bool[] occupied;
 
-        public HashTable(int theSize, bool useLinearProbing = false)//optional parameter useLinearProbing defaults to false
+        public HashTable(int theSize, bool useLinearProbing = false)
         {
-            if(theSize < 0) throw (new Exception("The size of hastable must be positive."));
+            if (theSize < 0) throw (new Exception("The size of hastable must be positive."));
 
-            // constructor's job is to initialize the instance variables
-            // bracket!
             linearProbing = useLinearProbing;
-            // if quadratic probing is used, we must satisfy Theorem Q.
-            if(!linearProbing)
+            if (!linearProbing)
             {
                 getNextGoodSizeForQuadraticProbing(ref theSize);
             }
@@ -38,28 +26,28 @@ namespace HashingLab
 
         private void getNextGoodSizeForQuadraticProbing(ref int theSize)
         {
-            while(!satisfiesTheoremQ(theSize))
+            while (!satisfiesTheoremQ(theSize))
             {
                 theSize++;
             }
         }
         private bool satisfiesTheoremQ(int theSize)
         {
-            if( theSize == 1 || theSize == 2) return true;
-            else if(isPrime(theSize) && theSize % 4 == 3) return true;
-            else if(theSize % 2 == 0)
+            if (theSize == 1 || theSize == 2) return true;
+            else if (isPrime(theSize) && theSize % 4 == 3) return true;
+            else if (theSize % 2 == 0)
             {
                 int half = theSize / 2;
-                if(isPrime(half) && half % 4 == 3) return true;
+                if (isPrime(half) && half % 4 == 3) return true;
             }
             return false;
         }
         private bool isPrime(int theSize)
         {
             int divider = 2;
-            while(divider < theSize)
+            while (divider < theSize)
             {
-                if(theSize % divider == 0) return false;
+                if (theSize % divider == 0) return false;
                 divider++;
             }
             return true;
@@ -73,17 +61,7 @@ namespace HashingLab
             for (int i = 0; i < items.Length; i++)
             {
                 // compute the probe index d = p(e,i)
-                // int index = probe(linearProbing, homePosition, i);
-                int index;
-                if (linearProbing)
-                {
-                    index = linearProbe(homePosition, i);
-                }
-                else
-                {
-                    index = quadraticProbe(homePosition, i);
-                }
-                
+                int index = probe(homePosition, i);
                 if (!occupied[index])
                 {
                     items[index] = theItem;
@@ -94,30 +72,24 @@ namespace HashingLab
             throw new Exception("Not enough capacity");
         }
 
-        //private int probe(bool linear, int homePosition, int probeIndex)
-        //{
-        //    int index = -1;
-        //    if(linear)
-        //    {
-        //        index = e + probeIndex;
-        //    }
-        //    else
-        //    {
-        // TODO: Check here again
-        //        // (i + 1)/2 * (i + 1)/2 * (-1)^(i+1)  
-        //        int sign = (int) Math.Pow(-1, probeIndex + 1);
-        //        index = (probeIndex + 1) / 2;
-        //        index = index * index * sign;
-        //        index = homePosition + index;
-        //    }
-        //    index = index % items.Length;    
-        //    return index;
-        //}
-
+        private int probe(int homePosition, int probeIndex)
+        {
+            int index;
+            if (linearProbing)
+            {
+                index = linearProbe(homePosition, probeIndex);
+                return index;
+            }
+            index = quadraticProbe(homePosition, probeIndex);
+            return index;
+        }
+        // The reason to make linearProbe method
+        // linearProbe method is just one line.
+        // However, linearProbe method should be managed equal level as qudaraticProbe method.
+        // Eventhough linearProbe method is one line, creating this method is more consistent code style.
         private int linearProbe(int homePosition, int probeIndex)
         {
             return (homePosition + probeIndex) % items.Length;
-
         }
 
         private int quadraticProbe(int homePosition, int probeIndex)
@@ -127,27 +99,42 @@ namespace HashingLab
             int index = (probeIndex + 1) / 2;
             index = index * index * sign;
             index = homePosition + index;
+            while (index < 0)
+            {
+                index += items.Length;
+            }
             index = index % items.Length;
             return index;
         }
-
-
-        public bool retrieveItem(ref T theItem)//theItem comes with its key fields filled, returns with all fields filled if found
+        public bool retrieveItem(ref T theItem)
         {
-            // if we find theItem in items at index d, then
-            // then we should fill in all fields of theItem using items[d]'s values.
-            // like this: theItem = items[d];
-
-            int k = theItem.getKey();
-            int e = hashFunction(k);
+            int keyValue = theItem.getKey();
+            int homePosition = hashFunction(keyValue);
+            // How about below style?
+            // int homePosition = hashFunction(theItem.getKey());
+            for (int i = 0; i < items.Length; i++)
+            {
+                // compute the probe index d = p(e,i)
+                int index = probe(homePosition, i);
+                //      if the array cell at index d is empty, then return false;
+                if (!occupied[index]) return false;
+                //      if the array cell at index d is occupied by an object y with the same key value
+                //          as x, then copy all data from y into x and return true;
+                if (items[index].getKey() == keyValue)
+                {
+                    theItem = items[index];
+                    return true; // Is it right place for return true?
+                }
+            }
             return false;
         }
 
         private int hashFunction(int keyValue)
         {
             if (keyValue < 0) throw new Exception("Key value must be at least greater than zero");
-            // getKey method is implemented by user, not hashtable creater.
-            // It is needed to be confirmed by hashtabel creator.
+            // The reason to put throw here
+            // getKey method is implemented by user, not hashtable creator.
+            // Therefore, it should be checked.
 
             int theNumber = keyValue, firstHalf = 0, secondHalf = 0;
             // Step 1 - 5: iterate 3 times
@@ -163,22 +150,30 @@ namespace HashingLab
                 // Step 4
                 theNumber += 9;
                 // Step 5
-                // TODO: Check here again
                 theNumber = theNumber % items.Length;
             }
             return theNumber;
         }
+
         private void splitNumber(int theNumber, ref int firstHalf, ref int secondHalf)
         {
             int digit = getDigit(theNumber);
             int firstDigit = digit / 2;
             int secondDigit = firstDigit;
-            if( (digit / 2) > firstDigit)
+            //(in case the number of digits is odd, group the greater number of digits into the second half)
+            if ( (digit / 2) > firstDigit)
             {
                 secondDigit++;
             }
             int zeros = (int) Math.Pow(10, secondDigit);
-            firstHalf = theNumber / zeros;
+            if(zeros == 0)
+            {
+                firstHalf = 0;
+            }
+            else
+            {
+                firstHalf = theNumber / zeros;
+            }
             secondHalf = theNumber - firstHalf * zeros;
         }
 
