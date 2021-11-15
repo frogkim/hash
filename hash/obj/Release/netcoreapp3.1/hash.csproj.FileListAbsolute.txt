@@ -4,7 +4,6 @@ C:\Users\frogkim\Source\Repos\hash\hash\bin\Release\netcoreapp3.1\hash.runtimeco
 C:\Users\frogkim\Source\Repos\hash\hash\bin\Release\netcoreapp3.1\hash.runtimeconfig.dev.json
 C:\Users\frogkim\Source\Repos\hash\hash\bin\Release\netcoreapp3.1\hash.dll
 C:\Users\frogkim\Source\Repos\hash\hash\bin\Release\netcoreapp3.1\hash.pdb
-C:\Users\frogkim\Source\Repos\hash\hash\obj\Release\netcoreapp3.1\hash.GeneratedMSBuildEditorConfig.editorconfig
 C:\Users\frogkim\Source\Repos\hash\hash\obj\Release\netcoreapp3.1\hash.AssemblyInfoInputs.cache
 C:\Users\frogkim\Source\Repos\hash\hash\obj\Release\netcoreapp3.1\hash.AssemblyInfo.cs
 C:\Users\frogkim\Source\Repos\hash\hash\obj\Release\netcoreapp3.1\hash.csproj.CoreCompileInputs.cache

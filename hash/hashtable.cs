@@ -11,17 +11,27 @@ namespace HashingLab
         private bool linearProbing;
         private bool[] occupied;
 
+        private delegate int prober(int homePosition, int probeIndex);
+        private prober probe;
+
+
         public HashTable(int theSize, bool useLinearProbing = false)
         {
             if (theSize < 0) throw (new Exception("The size of hastable must be positive."));
-
             linearProbing = useLinearProbing;
             if (!linearProbing)
             {
                 getNextGoodSizeForQuadraticProbing(ref theSize);
+                probe = linearProbe;
+            }
+            else
+            {
+                probe = quadraticProbe;
             }
             items = new T[theSize]; // default value, we don't know yet
             occupied = new bool[theSize]; // bool defaults to false, good!
+
+           
         }
 
         private void getNextGoodSizeForQuadraticProbing(ref int theSize)
@@ -72,17 +82,17 @@ namespace HashingLab
             throw new Exception("Not enough capacity");
         }
 
-        private int probe(int homePosition, int probeIndex)
-        {
-            int index;
-            if (linearProbing)
-            {
-                index = linearProbe(homePosition, probeIndex);
-                return index;
-            }
-            index = quadraticProbe(homePosition, probeIndex);
-            return index;
-        }
+        //private int probe(int homePosition, int probeIndex)
+        //{
+        //    int index;
+        //    if (linearProbing)
+        //    {
+        //        index = linearProbe(homePosition, probeIndex);
+        //        return index;
+        //    }
+        //    index = quadraticProbe(homePosition, probeIndex);
+        //    return index;
+        //}
         // The reason to make linearProbe method
         // linearProbe method is just one line.
         // However, linearProbe method should be managed equal level as qudaraticProbe method.
@@ -161,12 +171,17 @@ namespace HashingLab
             int firstDigit = digit / 2;
             int secondDigit = firstDigit;
             //(in case the number of digits is odd, group the greater number of digits into the second half)
-            if ( (digit / 2) > firstDigit)
+
+            // if ( (digit / 2) > firstDigit)
+            // CHECK
+            if( digit % 2 > 0 )
             {
                 secondDigit++;
             }
-            int zeros = (int) Math.Pow(10, secondDigit);
-            if(zeros == 0)
+            // CHECK
+            // int zeros = (int) Math.Pow(10, secondDigit);
+            int zeros = getZeros(secondDigit);
+            if (zeros == 0)
             {
                 firstHalf = 0;
             }
@@ -176,15 +191,24 @@ namespace HashingLab
             }
             secondHalf = theNumber - firstHalf * zeros;
         }
-
+        private int getZeros(int digit)
+        {
+            int n = 1;
+            while(digit >0)
+            {
+                n *= 10;
+            }
+            return n;
+        }
         private int getDigit(int theNumber)
         {
             int digit = 0;
-            while( theNumber > 0 )
+            // CHECK
+            do
             {
                 theNumber /= 10;
                 digit++;
-            }
+            } while (theNumber > 0);
             return digit;
         }
     }

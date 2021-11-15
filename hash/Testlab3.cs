@@ -11,18 +11,12 @@ namespace HashingLab
 
         public static void Main(string[] args)
         {
-            var logFile = new FileInfo("log.txt");
-            string s;
-            s = "Hello, log!";
-            logFile.AppendText(logFile.LastWriteTime.ToString() + s);
-
-
-
             int capacity = 11;
-            HashTable<Person> t = new HashTable<Person>(capacity, LinearProbing);
+            //HashTable<Person> t = new HashTable<Person>(capacity, LinearProbing);
+            var t = new HashTable<Person>(capacity, LinearProbing);
 
             //(c)stores a Person object p with name John Doe, age 20, SSN "000000001", repeatedly, a total of 11 times;
-            Person p = new Person("John Doe", "000000001", 20);
+            var p = new Person("John Doe", "000000001", 20);
            for(int i=0; i<11; i++)
             {
                 t.addItem(p);
@@ -38,10 +32,10 @@ namespace HashingLab
                 // Console.WriteLine("Adding Person object p is failed because of full capacity.");
                 Console.WriteLine("Oops! we got the following exeptions:" + e);
             }
-            
+
             //(e)creates a new Person object x with SSN "000000001" but no name or age, and calls retrieveItem to get this Person.
             // Person x = new Person("", "000000001", 0);
-            Person x = new Person("000000001");
+            var x = new Person("000000001");
             if (t.retrieveItem(ref x))
             {
                 Console.WriteLine("Success to retrieve x");
@@ -88,6 +82,44 @@ namespace HashingLab
             t = new HashTable<Person>(capacity, QuadraticProbing);
             t.addItem(p);
             Console.WriteLine("Adding zero SSN person to Quadratic Probing Hash table done.");
+
+            p = new Person("47259");
+            Console.WriteLine("Making zero SSN person object done.");
+
+            // Is it possible to add to HashTable with zero SSN person?
+            t = new HashTable<Person>(capacity, LinearProbing);
+            t.addItem(p);
+            Console.WriteLine("Adding zero SSN person to Linear Probing Hash table done.");
+
+            t = new HashTable<Person>(capacity, QuadraticProbing);
+            t.addItem(p);
+            Console.WriteLine("Adding zero SSN person to Quadratic Probing Hash table done.");
+
+            p = new Person("472596");
+            Console.WriteLine("Making zero SSN person object done.");
+
+            // Is it possible to add to HashTable with zero SSN person?
+            t = new HashTable<Person>(capacity, LinearProbing);
+            t.addItem(p);
+            Console.WriteLine("Adding zero SSN person to Linear Probing Hash table done.");
+
+            t = new HashTable<Person>(capacity, QuadraticProbing);
+            t.addItem(p);
+            Console.WriteLine("Adding zero SSN person to Quadratic Probing Hash table done.");
+
+            p = new Person("4725968");
+            Console.WriteLine("Making zero SSN person object done.");
+
+            // Is it possible to add to HashTable with zero SSN person?
+            t = new HashTable<Person>(capacity, LinearProbing);
+            t.addItem(p);
+            Console.WriteLine("Adding zero SSN person to Linear Probing Hash table done.");
+
+            t = new HashTable<Person>(capacity, QuadraticProbing);
+            t.addItem(p);
+            Console.WriteLine("Adding zero SSN person to Quadratic Probing Hash table done.");
+
+
 
         }
     }

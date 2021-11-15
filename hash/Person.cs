@@ -1,4 +1,4 @@
-// Modified by Jong-Young Choi
+//Jong-Young Choi
 
 using System;
 
